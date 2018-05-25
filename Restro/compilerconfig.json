@@ -1,0 +1,22 @@
+﻿[
+  {
+    "outputFile": "Content/Sidebar.css",
+    "inputFile": "Content/Sidebar.scss"
+  },
+  {
+    "outputFile": "Content/myStyles.css",
+    "inputFile": "Content/myStyles.scss"
+  },
+  {
+    "outputFile": "Content/General.css",
+    "inputFile": "Content/General.scss"
+  },
+  {
+    "outputFile": "Content/EditDelete.css",
+    "inputFile": "Content/EditDelete.scss"
+  },
+  {
+    "outputFile": "Content/ProgressBar.css",
+    "inputFile": "Content/ProgressBar.scss"
+  }
+]

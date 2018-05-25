@@ -1,0 +1,32 @@
+﻿@model Restro.Models.PlaceModel
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<div class="container">
+    <div class="row">
+        <h3 style="margin: 30px;text-align: center">Ви впевнені що бажаєте видалити заклад @Html.DisplayFor(model => model.Name)?  Усі повязані з ним дані буде втрачено</h3>
+  
+        <div class="col-lg-offset-2 col-lg-8 center">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-actions no-color">
+                    <input type="submit" value="Видалити заклад" class="btn add-new" />
+
+                    <button class="btn add-new">
+                        @Html.ActionLink("Назад до списку", "Index")
+                    </button>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

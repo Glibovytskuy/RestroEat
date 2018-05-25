@@ -1,0 +1,234 @@
+﻿@model Restro.Models.PlaceModel
+@{
+    ViewBag.Title = "Details";
+    var IsAdmin = ViewBag.IsAdmin;
+    var IsAthorized = ViewBag.IsAthorized;
+    var sum = 0; var i = 0; var ser = 0;
+}
+<div class="container padding-top-header places-details">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-5 col-lg-4 left-block center">
+
+            <figure>
+                @if (Model.Image != null)
+                {
+                    @Html.Raw("<img src=\"data:image/jpeg;base64,"
+                                                         + Convert.ToBase64String(Model.Image) + "\" />")
+                }
+            </figure>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-5 col-lg-6 center-block">
+            <header>
+                <h1>@Html.DisplayFor(model => model.Name)</h1>
+                <h3>@Html.DisplayFor(model => model.Type)</h3>
+                <h4>Інформація про нас</h4>
+                <p class="description">@Html.DisplayFor(model => model.Description)</p>
+                <h4>Кухня</h4>
+                <p>
+                    @foreach (var item in Model.Kitchens)
+                    {
+                        string split = item.Name + ", ";
+                        @split
+                    }
+                </p>
+                <h4>Послуги</h4>
+                <p>
+                    @foreach (var item in Model.Features)
+                    {
+                        string split = item.Name + ", ";
+                        @split
+                    }
+                </p>
+            </header>         
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 right-block center">
+            <header>
+                @if (IsAdmin == true)
+                {
+                    <button class="btn add-new">
+                        @Html.ActionLink("Редагувати", "Edit", new { id = Model.Id })
+                    </button>
+                }
+                <button class="btn add-new">
+                    @Html.ActionLink("Назад до списку", "Index")
+                </button>
+            </header>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 50px;" class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-4 left-block center">
+            <h4>
+                Адреса
+            </h4>
+            <address>
+                @Html.DisplayFor(model => model.Address)
+            </address>
+            <h4>Контакти</h4>
+            <ul>
+                <li>@Html.DisplayFor(model => model.Contacts)</li>
+            </ul>
+            <h4>Графік роботи</h4>
+            <ul>
+                @foreach (var item in Model.Days)
+            {
+                if (@item.IsWeeknd == true)
+                {
+                    <li>@item.Name: Вихідний</li>
+            }
+            else if (@item.IsRoundClock == true)
+            {
+                <li>@item.Name: Цілодобово</li>
+        }
+        else if (item.From != null && item.To != null && item.Name != null)
+        {
+            <li>@item.Name: @item.From.ToString().Substring(0, 5) - @item.To.ToString().Substring(0, 5)</li>
+    }
+}
+
+            </ul>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-7 col-lg-6 center-block">
+            <div class="ratings-block">
+                @foreach (var item in Model.Ratings)
+            {
+                <div class="col-xs-6 col-sm-12 col-md-6 rate-item">
+                    <div class="left pull-left">
+                        <div class="block good">
+                            <span>@item.Mark</span>
+                        </div>
+                        <span>@item.Name</span>
+                    </div>
+                    @{
+                    sum = sum + Convert.ToInt32(@item.Mark);
+                    i = i + 1;
+                    if (i != 0)
+                    {
+                        ser = sum / i;
+                    }
+                    }
+                    <div class="right">
+                        @using (Html.BeginForm("Details", "Places", FormMethod.Post))
+
+                    {
+                        @Html.AntiForgeryToken()
+                    if (IsAthorized)
+                    {
+                        <div class="radio">
+                            <label class="up">
+                                @Html.RadioButton("Mark", 100, new { @class = "rate", id = item.Id, name = item.Name, onclick = "this.form.submit()" })
+                                <input type="hidden" name="Name" value="@item.Name" />
+
+                                <span>Подобається</span>
+
+                            </label>
+
+
+
+                        </div>
+
+                }
+                else
+                {
+                    <div class="login">Щоб проголосувати @Html.ActionLink("Увійдіть", "Login", "Account") </div>
+            }
+
+            if (IsAthorized)
+            {
+                <div class="radio">
+                    <label class="down">
+                        @Html.RadioButton("Mark", 0, new { @class = "rate", id = item.Id, name = item.Name, onclick = "this.form.submit()" })
+                        <input type="hidden" name="Name" value="@item.Name" />
+
+                        <span>Не подобається</span>
+
+                    </label>
+                </div>
+        }
+
+
+
+    }
+
+                    </div>
+                </div>
+        }
+            </div>
+
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-2 right-block center">
+            <div class="rate-item">
+                <div class="center">
+                    <div class="block good">
+                        <span>@ser</span>
+                    </div>
+                    <span>Загальне враження</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div style="margin-bottom: 30px;" class="row">
+        @if (IsAthorized)
+        {
+            <div class="col-xs-12 col-sm-12 col-md-12 comment-block">
+                <h3>Написати відгук</h3>
+                <div class="col-xs-12 col-sm-2 col-md-2 user-avatar">
+                    <span class="glyphicon glyphicon-user"></span>
+                    <h4>@ViewBag.UserName</h4>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-10 comment">
+                    @using (Html.BeginForm("Details", "Places", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <label>
+                            @Html.TextArea("Comment", new { @class = "form-control", @placeholder = "Напишіть свої емоції", minlength = "20" })
+                            @*@Html.ValidationMessage("Comment", "Заповніть поле", new { @class = "text-danger" })*@
+                        </label>
+                        <input type="hidden" name="PlaceId" value="@Model.Id" />
+                        <input style="display: block;" class="add-new" type="submit" value="Відправити" />
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-xs-12 col-sm-12 col-md-4" style="color: #f69678; letter-spacing: 2px;text-align: center;">Щоб залишити коментар @Html.ActionLink("Увійдіть", "Login", "Account") </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 comment-block">
+            <div class="col-xs-12 col-sm-12 col-md-12 comment-block">
+                @foreach (var item in Model.Comments.OrderByDescending(x => x.Date))
+                {
+                    <div class="row" style="margin-bottom: 30px;">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 user-avatar">
+                            <span class="glyphicon glyphicon-user"></span>
+                            <h4>@item.UserName</h4>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 comment">
+                            <time>
+                                @String.Format("{0:f}", @item.Date)
+                            </time>
+                            <p>
+                                @item.Comment
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*<script>
+        $(document).ready(function () {
+            $('.rate').click(function () {
+                alert(1);
+                /$('#dialog').show();
+            });
+        });
+    </script>*@

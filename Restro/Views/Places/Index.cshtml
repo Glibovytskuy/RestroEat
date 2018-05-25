@@ -1,0 +1,323 @@
+﻿@model PagedList.IPagedList<Restro.Models.PlaceModel>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    var IsAdmin = ViewBag.IsAdmin;
+    var sum = 0; var i = 0; var ser = 0; var today = ""; var k = 0;
+    List<string> spanClass = new List<string>() { "glyphicon-cutlery", "glyphicon-plus", "glyphicon-minus","glyphicon-star","glyphicon-picture","glyphicon-picture"
+};
+}
+
+<div class="search-header">
+    <div class="container">
+        <div class="search-header-field">
+            <form asp-controller="Places" asp-action="Index">
+                <button type="submit" class="btn pull-right">
+                    Знайти
+                </button>
+                <div class="search-input">
+                    <input type="search" name="SearchString" value="@ViewBag.Search" placeholder="Пошук" />
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-5 col-md-4 col-lg-3">
+            <button type="button" id="button-sidebar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <aside class="sidebar" id="sidebar">
+                <span class="glyphicon glyphicon-remove" id="remove-sidebar"></span>
+                <h2>Оберіть заклади </h2>
+                <div class="shadules">
+
+                    <div class="radio">
+
+                        <label>
+                            @Html.RadioButton("datetime", "all", new { onclick = "addFilterParameter('datefilter', this.value);", @class = (ViewBag.Dateselect == "") ? "active" : "" })
+                            @Html.Raw(string.Format("<span class={0}>Всі</span> ", ViewBag.Dateselect != null && ViewBag.Dateselect.ToString().Equals("all") ? "active" : ""))
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+
+                            @Html.RadioButton("datetime", "open", new { onclick = "addFilterParameter('datefilter', this.value);", @class = (ViewBag.Dateselect == "open") ? "active" : "" })
+                            @Html.Raw(string.Format("<span class={0}>Відкриті зараз</span> ", ViewBag.Dateselect != null && ViewBag.Dateselect.ToString().Equals("open") ? "active" : ""))
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+
+                            @Html.RadioButton("datetime", "all_day", new { onclick = "addFilterParameter('datefilter', this.value);", @class = (ViewBag.Dateselect == "open") ? "active" : "" })
+                            @Html.Raw(string.Format("<span class={0}>Цілодобові</span> ", ViewBag.Dateselect != null && ViewBag.Dateselect.ToString().Equals("all_day") ? "active" : ""))
+
+                        </label>
+                    </div>
+                </div>
+                <hr class="hr-dotted" />
+                <div class="form-control-select-wrap-lite">
+                    @Html.DropDownList("TypeSelect", (IEnumerable<SelectListItem>)ViewBag.Types, new
+                    {
+                        onchange = "addFilterParameter('typefilter', this.options[this.selectedIndex].value)",
+                        @class = "form-control",
+                    }
+                                  )
+                </div>
+
+                <div class="form-control-select-wrap-lite">
+                    @Html.DropDownList("KitchenSelect", (IEnumerable<SelectListItem>)ViewBag.Kitchens, new
+                    {
+                        onchange = "addFilterParameter('kitchenfilter', this.options[this.selectedIndex].value)",
+                        @class = "form-control"
+                    }
+)
+                </div>
+                <hr class="hr-dotted" />
+                <div class="features">
+
+                    @foreach (var item in ViewBag.Features)
+                    {
+                        <label>
+                            @{
+                                bool isChecked = (ViewBag.SelectedFeatures != null) ? ViewBag.SelectedFeatures.Contains(item.Id) : false;
+                                if (k == spanClass.Count)
+                                {
+                                    k = 0;
+                                }
+                            
+                            }
+                            @Html.CheckBox("features", isChecked, new { onchange = "addCheckParameter('names', this.value, this.checked)", Value = @item.Id, @class = (isChecked) ? "active" : "" })
+                            <span class="glyphicon @spanClass[k]"></span>
+                            <div class="feature-name">@item.Name</div>
+                        </label>
+                                    k++;
+                                }
+                </div>
+            </aside>
+        </div>
+        <div class="col-sm-12 col-md-8 col-lg-9">
+            <div class="row places-container">
+                <div class="col-xs-12">
+                    <section class="topbar-sorting">
+                        <div class="sorter">
+                            <span class="rate">Рейтинг</span>
+                            <a href='@Url.Action("Index", new { sortorder = "up" })'>
+                                <span class="glyphicon glyphicon-arrow-up"></span>
+                            </a>
+                            <a href='@Url.Action("Index", new { sortorder = "down" })'>
+                                <span class="glyphicon glyphicon-arrow-down"></span>
+                            </a>
+                        </div>
+                    </section>
+
+
+                </div>
+                @foreach (var item in Model)
+                {
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 width-33">
+                        <article>
+                            <header>
+                                <h1>
+                                    <a href='@Url.Action("Details", new { id = item.Id })'>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </a>
+                                </h1>
+                                <h3>
+                                    @Html.DisplayFor(modelItem => item.Type)
+                                </h3>
+                            </header>
+                            <figure>
+                                <a href='@Url.Action("Details", new { id = item.Id })'>
+
+                                    @if (item.Image != null)
+                                    {
+                                        @Html.Raw("<img src=\"data:image/jpeg;base64,"
+                          + Convert.ToBase64String(item.Image) + "\" />")
+                                    }
+                                    <div class="about">
+                                        <div class="schedules">
+                                            <h4>
+                                                Графік роботи
+                                            </h4>
+                                            <hr class="hr-dotted" />
+                                            <ul class="list-shedule">
+                                                @foreach (var day in item.Days)
+                                                {
+                                                    
+
+
+                                                        if (@day.IsWeeknd == true)
+                                                        {
+                                                        <li>@day.Name: <span>Вихідний</span> </li>
+                                                    }
+                                                    else if (@day.IsRoundClock == true)
+                                                    {
+                                                        <li>@day.Name: <span>Цілодобово</span></li>
+                                                    }
+                                                    else if (day.From != null && day.To != null && day.Name != null)
+                                                    {
+                                                        <li>@day.Name: <span>@day.From.ToString().Substring(0, 5) - @day.To.ToString().Substring(0, 5)</span></li>
+                                                    }
+
+                                                        
+                                                    }
+
+                                            </ul>
+
+                                            <ul class="list-mark">
+                                                @foreach (var rate in item.Ratings)
+                                                {
+                                                    {
+                                                        sum += Convert.ToInt32(@rate.Mark);
+                                                        i++;
+                                                        ser = sum / i;
+                                                    }
+                                                }
+                                            </ul>
+
+                                        </div>
+                                    </div>
+                                    <div class="prog-bar">
+                                        <div class="progress blue">
+                                            <span class="progress-left">
+                                                <span class="progress-bar"></span>
+                                            </span>
+                                            <span class="progress-right">
+                                                <span class="progress-bar"></span>
+                                            </span>
+                                            <div class="progress-value">@ser<small style="font-size: 70%">%</small></div>
+                                        </div>
+                                    </div>
+                                    @{
+                                        if (i >= item.Ratings.Count)
+                                        {
+                                            i = 0;
+                                            sum = 0;
+                                            ser = 0;
+                                        }
+                                    }
+                                </a>
+                            </figure>
+                            <footer>
+                                <address>@Html.DisplayFor(modelItem => item.Address)</address>
+                                <div class="time">
+                                    @{
+                                        var daynow = System.DateTime.Now.DayOfWeek.ToString();
+                                        foreach (var day in item.Days)
+                                        {
+                                            if (daynow == day.Name && day.IsRoundClock == true)
+                                            {
+                                                today = "Цілодобово";
+                                            }
+                                            else if (daynow == day.Name && day.IsWeeknd == true)
+                                            {
+                                                today = "Вихідний";
+                                            }
+                                            else if (daynow == day.Name && day.From != null && day.To != null)
+                                            {
+                                                today = "Відчинено: " + day.From.ToString().Substring(0, 5) + " - " + day.To.ToString().Substring(0, 5);
+                                            }
+                                        }
+                                    }
+                                    <span class="glyphicon glyphicon-time"> </span>@today
+                                </div>
+                                <div class="details">
+                                    @Html.ActionLink("Детальніше", "Details", new { id = item.Id })
+                                </div>
+                                @if (IsAdmin == true)
+                                {
+                                    @Html.ActionLink("Редагувати", "Edit", new { id = item.Id })
+
+                                    @Html.ActionLink("Видалити", "Delete", new { id = item.Id })
+                                }
+                            </footer>
+                        </article>
+                    </div>
+                }
+                @if(Model.Count == 0)
+                {
+                 <div class="col-xs-12 no-places">
+                     <h2>Пошук</h2>
+                     <p>По Вашому запиту не знайдено закладів</p>
+                 </div>
+                }
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4 width-33">
+                    <div class="center">
+
+                        @if (IsAdmin == true)
+                        {
+                            <button class="btn add-new">
+                                @Html.ActionLink("Додати заклад", "Create")
+                            </button>
+                        }
+                    </div>
+                </div>
+                <div class="col-xs-12 center">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#button-sidebar').click(function () {
+                $("#sidebar").show();
+            });
+            $('#remove-sidebar').click(function () {
+                $("#sidebar").hide();
+            });
+
+            $(document).mouseup(function (e) {
+                var width = $(window).width();
+                var container = $("#sidebar");
+
+                // if the target of the click isn't the container nor a descendant of the container
+                if (!container.is(e.target) && container.has(e.target).length === 0 && (width < 993)) {
+                    container.hide();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function addFilterParameter(key, value) {
+            var url = new URL(window.location.href);
+            if (value == "") {
+                url.searchParams.delete(key);
+            } else {
+                url.searchParams.set(key, value);
+            }
+            window.location.assign(url.toString());
+        }
+    </script>
+
+    <script>
+        function addCheckParameter(key, value, checked) {
+            var url = new URL(window.location.href);
+            if (checked) {
+                url.searchParams.append(key, value);
+            } else {
+                var del = "";
+                del = key + "=" + value;
+                url = url.toString().replace(del, "");
+            }
+            window.location.assign(url.toString());
+        }
+    </script>
+
+
+
+
+
+
+

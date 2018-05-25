@@ -1,0 +1,79 @@
+﻿$color-orange: #f69678;
+$color-blue: #74cbcc;
+body {
+    font-family: "Roboto", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #2e2e2e;
+}
+hr {
+    .hr-dotted {
+        border: none;
+        position: relative;
+        overflow: visible;
+    }
+
+    line-height: 1;
+    border-radius: 100%;
+    background: #e7ded0;
+    width: 4px;
+    height: 4px;
+
+    &:before {
+        left: -12px;
+        content: '';
+        position: absolute;
+        line-height: 1;
+        border-radius: 100%;
+        background: #e7ded0;
+        width: 4px;
+        height: 4px;
+        left: 42%;
+    }
+
+    &:after {
+        content: '';
+        position: absolute;
+        line-height: 1;
+        border-radius: 100%;
+        background: #e7ded0;
+        width: 4px;
+        height: 4px;
+        right: 42%;
+    }
+}
+select {
+    text-transform: capitalize
+}
+.add-new {
+    margin: 0 auto;
+    height: 46px;
+    min-width: 130px;
+    background: $color-blue;
+    color: white;
+    box-shadow: 0px 2px 15px 0px rgba(0,0,0,0.1), inset 0px 1px 0px 0px rgba(255,255,255,0.15);
+    font-size: 14px;
+    text-transform: uppercase;
+    border-radius: 24px;
+    border: none;
+    font-weight: 500;
+
+    a {
+        color: #fff;
+    }
+
+    &:hover {
+        color: $color-blue;
+        background: #fff;
+        border: 2px solid $color-blue;
+
+        a {
+            color: $color-blue;
+        }
+    }
+}
+@media (min-width: 1200px){
+    .container {
+        max-width: 1270px;
+    }
+} 

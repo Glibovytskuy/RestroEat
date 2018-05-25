@@ -1,0 +1,151 @@
+﻿@using Restro.Models
+@model PlaceModel
+@{
+    ViewBag.Title = "Create";
+    List<string> daysOfWeeek = new List<string>() { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+    var i = 0;
+}
+
+<div class="container">
+    <div class="row">
+        @using (Html.BeginForm("Edit", "Places", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h1 class="center">Редагування закладу</h1>
+
+
+            <div class="col-lg-6">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Id)
+                <div class="form-group">
+                    @Html.Label("Фото закладу", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        <input type="file" name="uploadImage" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.Label("Назва закладу", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Тип", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Type, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Адреса", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Контакти", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Contacts, new { htmlAttributes = new { @class = "form-control", @cols = "200" } })
+                        @Html.ValidationMessageFor(model => model.Contacts, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Опис", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    @Html.Label("Кухня", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @foreach (var item in ViewBag.Kitchens)
+                {
+                    <input type="checkbox" name="SelectedKitchens" value="@item.Id" id="@item.Name"
+                           @(Model.Kitchens.Contains(item) ? "checked=\"checked\"" : "") />
+                    <label class="pointer" for="@item.Name">
+                        @item.Name
+                    </label>
+
+        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.Label("Послуги", new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @foreach (var item in ViewBag.Features)
+                {
+                    <input type="checkbox" name="SelectedFeatures" value="@item.Id" id="@item.Name"
+                           @(Model.Features.Contains(item) ? "checked=\"checked\"" : "") />
+                    <label class="pointer" for="@item.Name">
+                        @item.Name
+                    </label>
+
+        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2 class="center">Графік роботи закладу</h2>
+                <table class="shadule">
+                    <tr>
+                        <th class="col-lg-2">Дні тижня</th>
+                        <th class="col-lg-2">24h</th>
+                        <th class="col-lg-3">З</th>
+                        <th class="col-lg-3">До</th>
+                        <th class="col-lg-2">Вихідні</th>
+                    </tr>
+                    @foreach (var item in daysOfWeeek)
+            {
+                <tr>
+                    <td>@item</td>
+                    <td style="display: none">
+                        <input value="@item" name="Days[@i].Name" />
+                    </td>
+                    <td>
+                        <input type="checkbox" class="@item" name="Days[@i].IsRoundClock" />
+                    </td>
+                    <td>
+                        <input class="datapicker @item" type="text" name="Days[@i].From" />
+                    </td>
+                    <td>
+                        <input class="datapicker @item" type="text" name="Days[@i].To" />
+                    </td>
+                    <td>
+                        <input type="checkbox" class="@item" name="Days[@i].IsWeeknd" />
+                    </td>
+                </tr>
+        i++;
+    }
+                </table>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8 center">
+                    <input type="submit" value="Save" class="btn add-new" />
+                    <button class="btn add-new">
+                        @Html.ActionLink("Назад до списку", "Index")
+                    </button>
+                </div>
+            </div>
+        </div>
+}
+
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
